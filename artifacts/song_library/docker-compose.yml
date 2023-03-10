@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  web:
+    image: song-library
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    environment:
+      - MONGODB_URL=mongodb://admin:password1@mongo:27017
+  mongo:
+    container_name: mongo 
+    image: mongo:5.0.15-focal 
+    ports:
+      - 27017:27017
+    volumes:
+      - ~/data/song-library-mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password1
