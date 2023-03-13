@@ -1,0 +1,43 @@
+name: Test With Docker
+on: push
+
+jobs:
+  docker:
+    runs-on: ubuntu-22.04
+    steps: 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with: 
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with: 
+          context: "{{defaultContext}}:artifacts/song_library"
+          push: true 
+          tags: lukewyman/song-library:test
+  test:
+    runs-on: ubuntu-22.04
+    needs: [docker]
+    services:
+      web:
+        image: lukewyman/song-library:test
+        ports:
+          - 8081:8081
+        env:
+          MONGODB_URL: mongodb://admin:password1@mongo:27017
+      mongo:
+        image: mongo:5.0.15-focal 
+        ports:
+          - 27017:27017
+        volumes:
+          - ~/data/song-library-mongo:/data/db
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: password1
+    steps:
+      - name: Post a song 
+        run: 'curl -X POST http://localhost:8081/songs -H ''Content-Type: application/json'' -d ''{"song_title": "Monday Morning", "artist": "Fleetwood Mac"}''' 
+        
