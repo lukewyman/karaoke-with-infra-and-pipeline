@@ -36,6 +36,8 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: password1
     steps:
-      - name: Post a song 
-        run: 'curl -X POST http://localhost:8081/songs -H ''Content-Type: application/json'' -d ''{"song_title": "Monday Morning", "artist": "Fleetwood Mac"}''' 
-        
+      - name: Install test requirements
+        run: pip install -r tests/requirements.txt
+      - name: Run integration tests
+        run: pytest
+      
