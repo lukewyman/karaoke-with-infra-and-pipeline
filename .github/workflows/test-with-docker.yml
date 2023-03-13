@@ -32,8 +32,6 @@ jobs:
         image: mongo:5.0.15-focal 
         ports:
           - 27017:27017
-        volumes:
-          - ~/data/song-library-mongo:/data/db
         env:
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: password1
