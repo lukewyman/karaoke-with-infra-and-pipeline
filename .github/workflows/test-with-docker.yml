@@ -17,13 +17,13 @@ jobs:
         with: 
           context: "{{defaultContext}}:artifacts/song_library"
           push: true
-          tags: song-library:test
+          tags: lukewyman/song-library:test
   test:
     runs-on: ubuntu-22.04
     needs: [docker]
     services:
       web:
-        image: song-library:test
+        image: lukewyman/song-library:test
         ports:
           - 8081:8081
         env:
