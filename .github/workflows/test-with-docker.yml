@@ -7,23 +7,23 @@ jobs:
     steps: 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with: 
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v2
+      #   with: 
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v4
         with: 
           context: "{{defaultContext}}:artifacts/song_library"
-          push: true 
-          tags: lukewyman/song-library:test
+          push: false
+          tags: song-library:test
   test:
     runs-on: ubuntu-22.04
     needs: [docker]
     services:
       web:
-        image: lukewyman/song-library:test
+        image: song-library:test
         ports:
           - 8081:8081
         env:
@@ -40,6 +40,8 @@ jobs:
         uses: actions/checkout@v1
       - name: Install test requirements
         run: pip install -r tests/requirements.txt
+      - name: Seed database
+        run: python3 tests/seed_data/seed_data.py
       - name: Run integration tests
         run: pytest
       
