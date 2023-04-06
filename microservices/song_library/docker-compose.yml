@@ -8,6 +8,10 @@ services:
     ports:
       - 8081:8081
     environment:
+      - DOCDB_ENDPOINT=mongo
+      - DOCDB_PORT=27017
+      - DOCDB_USERNAME=admin
+      - DOCDB_PASSWORD=password1
       - MONGODB_URL=mongodb://admin:password1@mongo:27017
   mongo:
     container_name: mongo 
