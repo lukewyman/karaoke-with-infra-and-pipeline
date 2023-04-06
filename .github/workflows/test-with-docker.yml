@@ -27,7 +27,10 @@ jobs:
         ports:
           - 8081:8081
         env:
-          MONGODB_URL: mongodb://admin:password1@mongo:27017
+          DOCDB_ENDPOINT: mongo
+          DOCDB_PORT: 27017
+          DOCDB_USERNAME: admin
+          DOCDB_PASSWORD: password1
       mongo:
         image: mongo:5.0.15-focal 
         ports:
