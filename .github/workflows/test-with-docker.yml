@@ -15,7 +15,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with: 
-          context: "{{defaultContext}}:artifacts/song_library"
+          context: "{{defaultContext}}:microservices/song_library"
           push: true
           tags: lukewyman/song-library:test
   test:
