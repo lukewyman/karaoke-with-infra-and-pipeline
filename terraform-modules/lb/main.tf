@@ -27,15 +27,15 @@ resource "aws_security_group" "lb_sg" {
   }
 }
 
-resource "aws_route53_record" {
+resource "aws_route53_record" "karaoke_A_record" {
   zone_id = data.aws_route53_zone.hosted_zone.zone_id
-  name = "karaoke.${domain}"
-  type = "A"
+  name    = "karaoke.${var.domain}"
+  type    = "A"
 
   alias {
-    name = aws_lb.lb.dns_name
-    zone_id = aws_lb.lb.zone_id 
-    evaluate_target_health = true 
+    name                   = aws_lb.lb.dns_name
+    zone_id                = aws_lb.lb.zone_id
+    evaluate_target_health = true
   }
 }
 
@@ -64,7 +64,7 @@ resource "aws_lb_listener_rule" "song_library_rule" {
 
   condition {
     path_pattern {
-      values = ["/songs/*"]
+      values = ["/songs*"]
     }
   }
 
@@ -75,9 +75,18 @@ resource "aws_lb_listener_rule" "song_library_rule" {
 }
 
 resource "aws_lb_target_group" "song_library_target" {
-  name     = "${local.app_prefix}${terraform.workspace}-target"
-  protocol = "HTTP"
-  port     = 8081
-  vpc_id   = var.vpc_id
+  name        = "${local.app_prefix}${terraform.workspace}-target"
+  protocol    = "HTTP"
+  port        = 8081
+  vpc_id      = var.vpc_id
   target_type = "ip"
+  health_check {
+    healthy_threshold   = 3
+    interval            = 30
+    protocol            = "HTTP"
+    path                = "/health"
+    matcher             = "200"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
 }

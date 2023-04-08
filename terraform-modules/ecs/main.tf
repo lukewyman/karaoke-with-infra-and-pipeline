@@ -3,9 +3,11 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_ecs_service" "service" {
-  name        = "${local.app_prefix}${terraform.workspace}-${var.service_name}-service"
-  cluster     = aws_ecs_cluster.cluster.name
-  launch_type = "FARGATE"
+  name            = "${local.app_prefix}${terraform.workspace}-${var.service_name}-service"
+  cluster         = aws_ecs_cluster.cluster.name
+  launch_type     = "FARGATE"
+  task_definition = aws_ecs_task_definition.task.arn
+  desired_count   = 1
 
   network_configuration {
     subnets          = var.subnet_ids
@@ -18,8 +20,6 @@ resource "aws_ecs_service" "service" {
     container_name   = var.service_name
     container_port   = 8081
   }
-
-  task_definition = aws_ecs_task_definition.task.arn
 }
 
 resource "aws_security_group" "ecs_service_sg" {
@@ -29,8 +29,8 @@ resource "aws_security_group" "ecs_service_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8081
+    to_port     = 8081
     protocol    = "tcp"
     cidr_blocks = ["10.0.11.0/24", "10.0.12.0/24"]
   }
@@ -98,6 +98,12 @@ resource "aws_iam_role" "task_role" {
 resource "aws_cloudwatch_log_group" "log" {
   name              = "/${local.app_prefix}${terraform.workspace}/${var.service_name}"
   retention_in_days = 14
+}
+
+resource "aws_iam_role_policy" "task_logging_role_policy" {
+  name   = "${local.app_prefix}${terraform.workspace}-${var.service_name}-log-policy"
+  role   = aws_iam_role.task_role.name
+  policy = data.aws_iam_policy_document.logging_policy.json 
 }
 
 resource "aws_iam_role_policy" "task_ecr_role_policy" {

@@ -12,6 +12,10 @@ logger.setLevel(logging.INFO)
 
 app = FastAPI()
 
+@app.get("/health", response_description="container health check")
+async def health_check():
+    return JSONResponse(status_code=200, content="OK")
+
 @app.post("/songs", response_description="Add a new Song", response_model=Song)
 async def create_song(song: Song=Body(...)):
     song = jsonable_encoder(song)

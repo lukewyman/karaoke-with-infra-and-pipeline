@@ -13,6 +13,22 @@ data "aws_iam_policy_document" "ecs_task_assume_policy" {
   }
 }
 
+data "aws_iam_policy_document" "logging_policy" {
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+
+    resources = [
+      "arn:aws:logs:*:*:*"
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "ecr_policy" {
   statement {
     effect    = "Allow"

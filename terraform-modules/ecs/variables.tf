@@ -9,20 +9,20 @@ variable "service_name" {
 }
 
 variable "vpc_id" {
-  default = "vpc-0ba91c206e32daaa5"
+  default = "vpc-083406a44c7f13237"
 }
 
 variable "subnet_ids" {
   type = list(string)
   default = [
-    "subnet-09ce45747eb4ed3c0",
-    "subnet-0415363f7b1ee9f7e",
+    "subnet-07372817589fe5948",
+    "subnet-016566a6685e243f1",
   ]
 }
 
 variable "target_group_arn" {
   type    = string
-  default = "arn:aws:elasticloadbalancing:us-west-2:919980474747:targetgroup/karaoke-app-lb-dev-target/3e52cbb6c229eb74"
+  default = "arn:aws:elasticloadbalancing:us-west-2:919980474747:targetgroup/karaoke-app-lb-dev-target/ffbaa32d37fea9a3"
 }
 
 variable "image_uri" {
