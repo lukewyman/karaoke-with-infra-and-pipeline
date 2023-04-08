@@ -57,36 +57,3 @@ resource "aws_lb_listener" "listener" {
     }
   }
 }
-
-resource "aws_lb_listener_rule" "song_library_rule" {
-  listener_arn = aws_lb_listener.listener.arn
-  priority     = 10
-
-  condition {
-    path_pattern {
-      values = ["/songs*"]
-    }
-  }
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.song_library_target.arn
-  }
-}
-
-resource "aws_lb_target_group" "song_library_target" {
-  name        = "${local.app_prefix}${terraform.workspace}-target"
-  protocol    = "HTTP"
-  port        = 8081
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-  health_check {
-    healthy_threshold   = 3
-    interval            = 30
-    protocol            = "HTTP"
-    path                = "/health"
-    matcher             = "200"
-    timeout             = 5
-    unhealthy_threshold = 2
-  }
-}
