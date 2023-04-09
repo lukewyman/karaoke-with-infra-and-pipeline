@@ -1,5 +1,5 @@
 resource "aws_ecs_service" "service" {
-  name            = "${local.app_prefix}${terraform.workspace}-${var.service_name}-service"
+  name            = "${var.app_prefix}${terraform.workspace}-${var.service_name}-service"
   cluster         = var.cluster_name # aws_ecs_cluster.cluster.name
   launch_type     = "FARGATE"
   task_definition = aws_ecs_task_definition.task.arn
@@ -7,7 +7,7 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     subnets          = var.app_subnets_ids
-    security_groups  = [var.security_group_id] # [aws_security_group.ecs_service_sg.id]
+    security_groups  = [var.ecs_security_group_id] # [aws_security_group.ecs_service_sg.id]
     assign_public_ip = false
   }
 
@@ -19,7 +19,7 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_lb_listener_rule" "listener_rule" {
-  listener_arn = var.listener_arn # aws_lb_listener.listener.arn
+  listener_arn = var.lb_listener_arn # aws_lb_listener.listener.arn
   priority     = var.priority
 
   condition {
@@ -34,8 +34,21 @@ resource "aws_lb_listener_rule" "listener_rule" {
   }
 }
 
+resource "aws_ecr_repository" "image_repo" {
+  name = "${var.app_prefix}${terraform.workspace}-${var.service_name}"
+}
+
+resource "docker_registry_image" "image" {
+  name = "${aws_ecr_repository.image_repo.repository_url}:${var.image_tag}"
+
+  build {
+    context    = "${path.module}/${var.context}"
+    dockerfile = "Dockerfile"
+  }
+}
+
 resource "aws_lb_target_group" "target" {
-  name        = "${local.app_prefix}${terraform.workspace}-${var.service_name}-target"
+  name        = "${var.service_name}-target-${terraform.workspace}"
   protocol    = "HTTP"
   port        = 8081
   vpc_id      = var.vpc_id
@@ -63,7 +76,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name      = var.service_name
-      image     = var.image_uri
+      image     = docker_registry_image.image.name
       essential = true
       portMappings = [
         {
@@ -97,4 +110,32 @@ resource "aws_ecs_task_definition" "task" {
       }
     }
   ])
+}
+
+resource "aws_cloudwatch_log_group" "log" {
+  name              = "/${var.cluster_name}/${var.service_name}"
+  retention_in_days = 14
+}
+
+resource "aws_iam_role" "task_role" {
+  name               = "${var.app_prefix}${terraform.workspace}-${var.service_name}-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "logging_policy" {
+  name   = "${var.app_prefix}${terraform.workspace}-${var.service_name}-logging-policy"
+  role   = aws_iam_role.task_role.name
+  policy = data.aws_iam_policy_document.logging_policy.json
+}
+
+resource "aws_iam_role_policy" "ecr_policy" {
+  name   = "${var.app_prefix}${terraform.workspace}-${var.service_name}-ecr-policy"
+  role   = aws_iam_role.task_role.name
+  policy = data.aws_iam_policy_document.ecr_policy.json
+}
+
+resource "aws_iam_role_policy" "ssm_policy" {
+  name   = "${var.app_prefix}${terraform.workspace}-${var.service_name}-ssm-policy"
+  role   = aws_iam_role.task_role.name
+  policy = data.aws_iam_policy_document.ssm_policy.json
 }

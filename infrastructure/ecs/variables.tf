@@ -4,10 +4,21 @@ variable "aws_region" {
 }
 
 variable "vpc_id" {
-  default = "vpc-083406a44c7f13237"
+  default = "vpc-01d79b504bbfedf89"
 }
 
 variable "public_subnets_cidr_blocks" {
   type = list(string)
-  default = []
+  default = [
+    "10.0.11.0/24",
+    "10.0.12.0/24",
+  ]
+}
+
+variable "from_port" {
+  default = 8081
+}
+
+variable "to_port" {
+  default = 8081
 }

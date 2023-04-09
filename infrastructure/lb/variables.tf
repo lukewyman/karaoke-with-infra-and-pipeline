@@ -4,14 +4,14 @@ variable "aws_region" {
 
 variable "vpc_id" {
   type    = string
-  default = "vpc-083406a44c7f13237"
+  default = "vpc-01d79b504bbfedf89"
 }
 
-variable "subnet_ids" {
+variable "public_subnets_ids" {
   type = list(string)
   default = [
-    "subnet-0538edd709c8888b2",
-    "subnet-0536ac54e0e3016eb",
+    "subnet-0e99f6b1dc7872563",
+    "subnet-0c5e2a8f3f182872e",
   ]
 }
 
