@@ -1,3 +1,6 @@
+variable "app_name" {
+}
+
 variable "app_prefix" {
 }
 
@@ -11,10 +14,9 @@ variable "aws_region" {
 variable "cluster_name" {
 }
 
-variable "container_definition" {
+variable "container_params" {
   type = object({
     name           = string
-    image          = string 
     container_port = number 
     host_port      = number
     environment    = map(string)
@@ -23,6 +25,8 @@ variable "container_definition" {
   description = "Container definition assigned to ECS Task"
 }
 
+variable "context" {
+}
 
 variable "docdb_password_arn" {
 }
@@ -34,6 +38,8 @@ variable "docdb_username_arn" {
 variable "ecs_security_group_id" {
 }
 
+variable "image_tag" {
+}
 
 variable "lb_listener_arn" {
 }
