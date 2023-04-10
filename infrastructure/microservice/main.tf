@@ -34,19 +34,6 @@ resource "aws_lb_listener_rule" "listener_rule" {
   }
 }
 
-resource "aws_ecr_repository" "image_repo" {
-  name = "${var.app_prefix}${terraform.workspace}-${var.service_name}"
-}
-
-resource "docker_registry_image" "image" {
-  name = "${aws_ecr_repository.image_repo.repository_url}:${var.image_tag}"
-
-  build {
-    context    = "${path.module}/${var.context}"
-    dockerfile = "Dockerfile"
-  }
-}
-
 resource "aws_lb_target_group" "target" {
   name        = "${var.service_name}-target-${terraform.workspace}"
   protocol    = "HTTP"
@@ -76,7 +63,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name      = var.service_name
-      image     = docker_registry_image.image.name
+      image     = var.image_uri
       essential = true
       portMappings = [
         {
