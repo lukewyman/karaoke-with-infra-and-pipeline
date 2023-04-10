@@ -62,8 +62,8 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
-      name      = var.service_name
-      image     = var.image_uri
+      name      = var.container_definition.name
+      image     = var.container_definition.image
       essential = true
       portMappings = [
         {
@@ -71,22 +71,20 @@ resource "aws_ecs_task_definition" "task" {
           hostPort      = 8081
         }
       ]
-      environment = [{
-        name  = "DOCDB_ENDPOINT"
-        value = var.docdb_endpoint
-        },
+      environment = [
+        for key, value in var.container_definition.environment :
         {
-          name  = "DOCDB_PORT"
-          value = var.docdb_port
-      }]
-      secrets = [{
-        name      = "DOCDB_USERNAME"
-        valueFrom = var.docdb_username_arn
-        },
+          name = key 
+          value = value 
+        }
+      ]
+      secrets = [
+        for key, value in var.container_definition.secrets :
         {
-          name      = "DOCDB_PASSWORD"
-          valueFrom = var.docdb_password_arn
-      }]
+          name = key 
+          valueFrom = value 
+        }
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
