@@ -12,3 +12,32 @@ inputs = {
   context    = "../../../../../../../microservices/song_library"
   image_tag  = 1
 }
+
+generate "backend" {
+    path = "backend.tf"
+    if_exists = "overwrite"
+    contents = <<EOF
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "2.23.1"
+    }
+
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.58.0"
+    }
+  }
+
+  backend "remote" {
+    hostname     = "app.terraform.io"
+    organization = "spikes"
+
+    workspaces {
+      prefix = "karaoke-app-song-lib-ecr-"
+    }
+  }
+}
+    EOF
+}

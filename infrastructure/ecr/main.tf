@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "image_repo" {
-  name = "${local.app_prefix}${terraform.workspace}-${var.app_name}"
+  name = "${var.app_prefix}${terraform.workspace}-${var.app_name}"
 }
 
 resource "docker_registry_image" "image" {
