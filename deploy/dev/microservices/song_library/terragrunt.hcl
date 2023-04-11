@@ -2,28 +2,13 @@ include "root" {
   path = find_in_parent_folders()
 }
 
-terraform {
-  source = "${get_parent_terragrunt_dir("root")}/../../infrastructure/microservice"
-}
-
-dependency "lookup" {
-  config_path = "../../lookup"
-}
-
-dependency "ecs" {
-  config_path = "../../ecs"
-}
-
-dependency "lb" {
-  config_path = "../../lb"
+include "microservice" {
+  path = "${get_terragrunt_dir()}/../../../_env/microservice.hcl"
 }
 
 inputs = {
-  app_name        = "song-library"
-  app_prefix      = "karaoke-app-svc-song-lib-"
-  app_subnets_ids = dependency.lookup.outputs.app_subnets_ids
-  aws_region      = "us-west-2"
-  cluster_name    = dependency.ecs.outputs.cluster_name
+  app_name   = "song-library"
+  app_prefix = "karaoke-app-svc-song-lib-"
   container_params = {
     name           = "song-lib"
     container_port = 8081
@@ -37,15 +22,12 @@ inputs = {
       "DOCDB_PASSWORD" = dependency.lookup.outputs.docdb_password_arn
     }
   }
-  context               = "../../../../../../../microservices/song_library"
-  docdb_password_arn    = dependency.lookup.outputs.docdb_password_arn
-  docdb_username_arn    = dependency.lookup.outputs.docdb_username_arn
-  ecs_security_group_id = dependency.ecs.outputs.security_group_id
-  image_tag             = 1
-  lb_listener_arn       = dependency.lb.outputs.lb_listener_arn
-  priority              = 10
-  service_name          = "song-lib"
-  vpc_id                = dependency.lookup.outputs.vpc_id
+  context            = "../../../../../../../microservices/song_library"
+  docdb_password_arn = dependency.lookup.outputs.docdb_password_arn
+  docdb_username_arn = dependency.lookup.outputs.docdb_username_arn
+  image_tag          = 1
+  priority           = 10
+  service_name       = "song-lib"
 }
 
 generate "backend" {
