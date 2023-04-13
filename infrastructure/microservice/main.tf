@@ -14,7 +14,7 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.target.arn
     container_name   = var.service_name
-    container_port   = 8081
+    container_port   = var.port
   }
 }
 
@@ -24,7 +24,7 @@ resource "aws_lb_listener_rule" "listener_rule" {
 
   condition {
     path_pattern {
-      values = ["/songs*"]
+      values = var.paths
     }
   }
 
@@ -37,7 +37,7 @@ resource "aws_lb_listener_rule" "listener_rule" {
 resource "aws_lb_target_group" "target" {
   name        = "${var.service_name}-target-${terraform.workspace}"
   protocol    = "HTTP"
-  port        = 8081
+  port        = var.port
   vpc_id      = var.vpc_id
   target_type = "ip"
 

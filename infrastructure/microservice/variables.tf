@@ -25,6 +25,10 @@ variable "container_params" {
   description = "Container definition assigned to ECS Task"
 }
 
+variable "port" {
+  type = number
+}
+
 variable "context" {
 }
 
@@ -42,6 +46,10 @@ variable "image_tag" {
 }
 
 variable "lb_listener_arn" {
+}
+
+variable "paths" {
+  type = list(string)
 }
 
 variable "priority" {

@@ -15,5 +15,5 @@ inputs = {
   vpc_id                     = dependency.lookup.outputs.vpc_id
   public_subnets_cidr_blocks = dependency.lookup.outputs.public_subnets_cidr_blocks
   from_port                  = 8081
-  to_port                    = 8081
+  to_port                    = 8082
 }

@@ -1,12 +1,12 @@
 version: "3.9"
 services:
   web:
-    image: song-library
+    image: singers
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8081:8081
+      - 8082:8082
     environment:
       - DOCDB_ENDPOINT=mongo
       - DOCDB_PORT=27017
@@ -18,7 +18,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ~/data/karaoke-mongo:/data/db
+      - ~/data/karoke-mongo:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password1
